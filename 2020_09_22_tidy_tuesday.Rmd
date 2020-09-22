@@ -1,0 +1,63 @@
+---
+title: "TidyTemplate"
+date: 2020-09-22
+output: html_output
+editor_options: 
+  chunk_output_type: console
+---
+
+# TidyTuesday
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE, 
+                      warning = FALSE, message = FALSE,
+                      dpi = 180, fig.width = 8, fig.height = 5)
+
+library(tidyverse)
+library(tidytuesdayR)
+library(scales)
+theme_set(theme_light())
+```
+
+# Load the weekly Data
+
+Download the weekly data and make available in the `tt` object.
+
+### Reading and Cleaning
+```{r Load}
+baltimore <-
+    read_csv(
+        "https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2018/2018-11-27/baltimore_bridges.csv"
+    ) %>%
+    select(-vehicles) %>%
+    mutate(inspection_yr = inspection_yr + 2000,
+           decade_built = 10*(yr_built%/%10))
+```
+
+# Exploration
+```{r}
+baltimore %>% 
+    count(decade_built) %>% 
+    filter(decade_built >= 1870) %>% 
+    ggplot(aes(decade_built, n)) +
+    geom_line(size =1, color = "gray60")
+```
+
+
+```{r}
+baltimore %>% 
+    count(yr_built, bridge_condition) %>% 
+    filter(yr_built >= 1870) %>% 
+    ggplot(aes(yr_built, n, color = bridge_condition)) +
+    geom_point(size =2)
+```
+
+```{r}
+baltimore %>% 
+    filter(yr_built >= 1900) %>% 
+    group_by(decade_built) %>% 
+    summarise(pct_good = mean(bridge_condition == "Good"),
+              total = n())
+```
+
