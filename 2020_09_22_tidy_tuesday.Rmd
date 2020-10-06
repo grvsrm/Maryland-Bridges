@@ -128,5 +128,15 @@ maryland_bridges %>%
 
 ```{r}
 
+maryland_bridges %>% 
+  ggplot(aes(long, lat, color = county)) +
+  geom_point() +
+  borders("state", regions = "Maryland") +
+  theme_void() +
+  coord_map()
+```
+
+```{r}
+
 ```
 
